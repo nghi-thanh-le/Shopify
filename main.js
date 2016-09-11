@@ -3,7 +3,6 @@
 var helpers = require('./helpers'),
     _ = require('lodash'),
     request = require('request'),
-    Promise = require('bluebird'),
     Async = require('async');
 
 var count = 1;
@@ -17,19 +16,25 @@ Async.whilst(
         return validCondition;
     },
     function (callback) {
-        request(uri + count, function (err, res, body) {
-            body = JSON.parse(body);
-            validCondition = body.products.length > 0 ? true : false;
+        helpers.asyncRequest(uri + count, function (response) {
+            validCondition = response.products.length > 0 ? true : false;
             if (validCondition) {
-                _.forEach(body.products, function(product) {
-                    helpers.checkAndCount(product, total);
+                _.forEach(response.products, function(product) {
+                    if(product.product_type == 'Clock' || product.product_type == 'Watch') {
+                        products.push(product);
+                    }
                 });
             }
             count++;
-            callback(null, total);
+            callback(null);
         });
     },
-    function (err, price) {
-        console.log(price);
+    function (err) {
+        _.forEach(products, function (product) {
+            _.forEach(product.variants, function (variant) {
+                total += parseFloat(variant.price);
+            });
+        });
+        console.log('Total price: ', total);
     }
 );
