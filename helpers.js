@@ -27,6 +27,8 @@ module.exports = {
             _.forEach(product.variants, function (variant) {
                 total += parseFloat(variant.price);
             });
+            console.log('total::::', total);
+            console.log('------------');
         }
     }
 };
