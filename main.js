@@ -3,7 +3,8 @@
 var helpers = require('./helpers'),
     _ = require('lodash'),
     request = require('request'),
-    Async = require('async');
+    Async = require('async'),
+    accounting = require('accounting');
 
 var count = 1;
 var total = 0;
@@ -28,6 +29,7 @@ Async.whilst(
             count++;
             callback(null);
         });
+
     },
     function (err) {
         _.forEach(products, function (product) {
@@ -35,6 +37,6 @@ Async.whilst(
                 total += parseFloat(variant.price);
             });
         });
-        console.log('Total price: ', total);
+        console.log('Total price: ', accounting.formatMoney(total));
     }
 );
